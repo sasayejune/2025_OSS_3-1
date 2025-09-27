@@ -1,11 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Lab2: 첫 방문자 환영 메시지</title>
 </head>
 <body>
-    
+  <h1>환영합니다 👋</h1>
+
+  <script>
+    console.log(location.pathname);
+
+    const hasVisited = localStorage.getItem("hasVisited");
+
+    if (!hasVisited) {
+      alert("환영합니다! 처음 방문해주셨네요 😊");
+      localStorage.setItem("hasVisited", "true");
+    }
+  </script>
 </body>
 </html>
