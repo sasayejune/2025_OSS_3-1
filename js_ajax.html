@@ -1,200 +1,137 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>Lab4 - JS AJAX CRUD (fetch)</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    #studentList li { cursor: pointer; padding: 6px; }
-    #studentList li.selected { background: #e0f0ff; }
-    .flex { display: flex; gap: 10px; align-items: center; }
-    .form { margin: 8px 0; }
-    label { display:block; font-size:12px; margin-top:6px; }
-    input[type="text"], input[type="number"] { width:200px; padding:4px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학생 CRUD (json-server id 자동)</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; }
+  input { margin: 5px; }
+  button { margin: 5px; }
+  ul { margin-top: 20px; }
+  li { margin-bottom: 10px; }
+</style>
 </head>
 <body>
-  <h1>학생 관리 CRUD (fetch)</h1>
 
-  <div class="flex">
-    <button id="readBtn">조회 (Read)</button>
-    <button id="createBtn">추가 (Create)</button>
-    <button id="updateBtn">수정 (Update)</button>
-    <button id="deleteBtn">삭제 (Delete)</button>
-  </div>
+<h1>학생 관리 CRUD (json-server id 자동)</h1>
 
-  <hr>
+<!-- 입력 폼 -->
+<input type="text" id="createName" placeholder="이름">
+<input type="number" id="createAge" placeholder="나이">
+<input type="text" id="createMajor" placeholder="전공">
+<button id="btnAdd">추가(Create)</button>
+<button id="btnRead">조회(Read)</button>
 
-  <section>
-    <h3>추가 (Create)</h3>
-    <div class="form">
-      <label>이름 <input id="createName" type="text" placeholder="홍길동"></label>
-      <label>나이 <input id="createAge" type="number" min="0" placeholder="20"></label>
-      <label>전공 <input id="createMajor" type="text" placeholder="컴퓨터공학"></label>
-    </div>
-  </section>
+<ul id="studentList"></ul>
 
-  <section>
-    <h3>수정 (Update) — 목록에서 항목 클릭하면 값이 채워집니다</h3>
-    <div class="form">
-      <label>ID <input id="updateId" type="number" readonly placeholder="선택 필요"></label>
-      <label>이름 <input id="updateName" type="text"></label>
-      <label>나이 <input id="updateAge" type="number" min="0"></label>
-      <label>전공 <input id="updateMajor" type="text"></label>
-    </div>
-  </section>
+<script>
+const apiUrl = "http://localhost:3001/students"; // json-server
+const createName = document.getElementById("createName");
+const createAge = document.getElementById("createAge");
+const createMajor = document.getElementById("createMajor");
+const studentList = document.getElementById("studentList");
 
-  <hr>
+function writeLog(...args) { console.log(...args); }
 
-  <h3>학생 목록</h3>
-  <ul id="studentList"></ul>
+// ✅ 조회(Read)
+async function getStudents() {
+  try {
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error(`GET 오류: ${res.status}`);
+    const students = await res.json();
+    studentList.innerHTML = "";
+    students.forEach(s => {
+      const li = document.createElement("li");
+      li.textContent = `${s.id} - ${s.name} (${s.age}세, ${s.major})`;
 
-  <pre id="log" style="background:#f9f9f9;padding:10px;height:120px;overflow:auto"></pre>
+      // 수정 버튼
+      const btnEdit = document.createElement("button");
+      btnEdit.textContent = "수정(Update)";
+      btnEdit.onclick = () => updateStudent(s.id);
 
-  <script>
-    const apiUrl = "http://localhost:3001/students"; // json-server 주소
-    const readBtn = document.getElementById("readBtn");
-    const createBtn = document.getElementById("createBtn");
-    const updateBtn = document.getElementById("updateBtn");
-    const deleteBtn = document.getElementById("deleteBtn");
+      // 삭제 버튼
+      const btnDelete = document.createElement("button");
+      btnDelete.textContent = "삭제(Delete)";
+      btnDelete.onclick = () => deleteStudent(s.id);
 
-    const createName = document.getElementById("createName");
-    const createAge = document.getElementById("createAge");
-    const createMajor = document.getElementById("createMajor");
+      li.appendChild(btnEdit);
+      li.appendChild(btnDelete);
+      studentList.appendChild(li);
+    });
+  } catch (err) {
+    writeLog("조회 실패:", err.message);
+  }
+}
 
-    const updateId = document.getElementById("updateId");
-    const updateName = document.getElementById("updateName");
-    const updateAge = document.getElementById("updateAge");
-    const updateMajor = document.getElementById("updateMajor");
+// ✅ 추가(Create) - id 자동 생성
+async function createStudent() {
+  const name = createName.value.trim();
+  const age = Number(createAge.value);
+  const major = createMajor.value.trim();
+  if (!name || !major || !age) return alert("이름/나이/전공을 모두 입력하세요.");
 
-    const studentList = document.getElementById("studentList");
-    const log = document.getElementById("log");
+  try {
+    const newStudent = { name, age, major }; // id 제거!
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newStudent)
+    });
+    if (!res.ok) throw new Error(`POST 오류: ${res.status}`);
+    const data = await res.json();
+    writeLog("추가 성공:", data);
 
-    let selectedId = null;
+    createName.value = "";
+    createAge.value = "";
+    createMajor.value = "";
+    await getStudents();
+  } catch (err) {
+    writeLog("추가 실패:", err.message);
+  }
+}
 
-    function writeLog(...args) {
-      const line = args.map(a => (typeof a === "object" ? JSON.stringify(a) : a)).join(" ");
-      log.textContent += line + "\n";
-      log.scrollTop = log.scrollHeight;
-      console.log(...args);
-    }
+// ✅ 수정(Update)
+async function updateStudent(id) {
+  const newName = prompt("새 이름:");
+  const newAge = prompt("새 나이:");
+  const newMajor = prompt("새 전공:");
+  if (!newName || !newAge || !newMajor) return alert("모두 입력해야 합니다.");
 
-    // 목록 렌더링
-    function renderStudents(students) {
-      studentList.innerHTML = "";
-      students.forEach(s => {
-        const li = document.createElement("li");
-        li.textContent = `${s.id}. ${s.name} (${s.age}, ${s.major})`;
-        li.dataset.id = s.id;
-        if (String(s.id) === String(selectedId)) li.classList.add("selected");
-        li.addEventListener("click", () => selectStudent(s));
-        studentList.appendChild(li);
-      });
-    }
+  try {
+    const res = await fetch(`${apiUrl}/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newName, age: Number(newAge), major: newMajor })
+    });
+    if (!res.ok) throw new Error(`PATCH 오류: ${res.status}`);
+    const data = await res.json();
+    writeLog("수정 성공:", data);
+    await getStudents();
+  } catch (err) {
+    writeLog("수정 실패:", err.message);
+  }
+}
 
-    // 항목 선택 (수정/삭제 대상)
-    function selectStudent(s) {
-      selectedId = s.id;
-      // highlight
-      Array.from(studentList.children).forEach(li => {
-        li.classList.toggle("selected", li.dataset.id == selectedId);
-      });
-      // 채우기
-      updateId.value = s.id;
-      updateName.value = s.name;
-      updateAge.value = s.age;
-      updateMajor.value = s.major;
-      writeLog("선택:", s.id, s.name);
-    }
+// ✅ 삭제(Delete)
+async function deleteStudent(id) {
+  if (!confirm("정말 삭제할까요?")) return;
+  try {
+    const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error(`DELETE 오류: ${res.status}`);
+    writeLog("삭제 성공: id", id);
+    await getStudents();
+  } catch (err) {
+    writeLog("삭제 실패:", err.message);
+  }
+}
 
-    // READ
-    async function getStudents() {
-      try {
-        const res = await fetch(apiUrl);
-        if (!res.ok) throw new Error(`GET 오류: ${res.status}`);
-        const data = await res.json();
-        renderStudents(data);
-        writeLog("목록 불러옴:", data.length, "개");
-      } catch (err) {
-        writeLog("조회 실패:", err.message);
-        alert("조회 실패. json-server 실행 여부(및 포트)를 확인하세요.");
-      }
-    }
+// 버튼 이벤트 연결
+document.getElementById("btnAdd").addEventListener("click", createStudent);
+document.getElementById("btnRead").addEventListener("click", getStudents);
 
-    // CREATE
-    async function createStudent() {
-      const name = createName.value.trim();
-      const age = Number(createAge.value);
-      const major = createMajor.value.trim();
-      if (!name || !major || !age) return alert("이름/나이/전공을 모두 입력하세요.");
-      const newStudent = { name, age, major };
-      try {
-        const res = await fetch(apiUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newStudent)
-        });
-        if (!res.ok) throw new Error(`POST 오류: ${res.status}`);
-        const data = await res.json();
-        writeLog("추가 성공:", data);
-        // 클리어 및 목록 갱신
-        createName.value = ""; createAge.value = ""; createMajor.value = "";
-        await getStudents();
-      } catch (err) {
-        writeLog("추가 실패:", err.message);
-      }
-    }
-
-    // UPDATE (PATCH 사용 — 부분 갱신)
-    async function updateStudent() {
-      const id = updateId.value;
-      if (!id) return alert("먼저 목록에서 수정할 학생을 선택하세요.");
-      const name = updateName.value.trim();
-      const age = Number(updateAge.value);
-      const major = updateMajor.value.trim();
-      if (!name || !major || !age) return alert("이름/나이/전공을 모두 입력하세요.");
-      const payload = { name, age, major };
-      try {
-        const res = await fetch(`${apiUrl}/${id}`, {
-          method: "PATCH", // 전체 교체를 원하면 PUT으로 변경
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        if (!res.ok) throw new Error(`PATCH 오류: ${res.status}`);
-        const data = await res.json();
-        writeLog("수정 성공:", data);
-        await getStudents();
-      } catch (err) {
-        writeLog("수정 실패:", err.message);
-      }
-    }
-
-    // DELETE
-    async function deleteStudent() {
-      const id = selectedId || updateId.value;
-      if (!id) return alert("먼저 삭제할 학생을 목록에서 선택하세요.");
-      if (!confirm(`${id}번 학생을 삭제하시겠습니까?`)) return;
-      try {
-        const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
-        if (!res.ok) throw new Error(`DELETE 오류: ${res.status}`);
-        writeLog("삭제 성공: id", id);
-        // 선택 초기화
-        selectedId = null;
-        updateId.value = ""; updateName.value = ""; updateAge.value = ""; updateMajor.value = "";
-        await getStudents();
-      } catch (err) {
-        writeLog("삭제 실패:", err.message);
-      }
-    }
-
-    // 버튼 이벤트 바인딩
-    readBtn.addEventListener("click", getStudents);
-    createBtn.addEventListener("click", createStudent);
-    updateBtn.addEventListener("click", updateStudent);
-    deleteBtn.addEventListener("click", deleteStudent);
-
-    // 초기 로드
-    getStudents();
-  </script>
+// 페이지 로드 시 초기 목록
+getStudents();
+</script>
 </body>
 </html>
