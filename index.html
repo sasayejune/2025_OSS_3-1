@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to 김예준's Homepage · 포트폴리오</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #f8f9fb;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            padding: 80px 20px 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            background: #fff;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #444;
+            font-weight: 600;
+            transition: color .3s;
+        }
+
+        nav a:hover {
+            color: #66a6ff;
+        }
+
+        section {
+            max-width: 1100px;
+            margin: auto;
+            padding: 60px 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+            color: #222;
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform .3s, box-shadow .3s;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #fff;
+            border-top: 1px solid #eee;
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: #66a6ff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Welcome to 김예준's Homepage (22300155)</h1>
+        <p>JAVA · Flutter · HTML & CSS · C · C++ 개발자</p>
+    </header>
+
+    <nav>
+        <a href="#about">소개</a>
+        <a href="#skills">기술</a>
+        <a href="#projects">프로젝트</a>
+        <a href="#contact">연락처</a>
+    </nav>
+
+    <section id="about">
+        <h2>소개</h2>
+        <p style="text-align:center; max-width:700px; margin:auto;">
+            안녕하세요, 개발자 <strong>김예준</strong>입니다.<br>
+            다양한 언어와 프레임워크를 활용해 웹·모바일·시스템 프로그래밍을 경험했습니다.<br>
+            심플하고 직관적인 UI/UX, 협업과 성장 중심의 개발을 추구합니다.
+        </p>
+    </section>
+
+    <section id="skills">
+        <h2>기술 스택</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>JAVA</h3>
+                <p>Spring Boot · 객체지향</p>
+            </div>
+            <div class="card">
+                <h3>Flutter</h3>
+                <p>Firebase 연동 앱 개발</p>
+            </div>
+            <div class="card">
+                <h3>HTML & CSS</h3>
+                <p>반응형 웹 · Grid/Flex</p>
+            </div>
+            <div class="card">
+                <h3>C</h3>
+                <p>운영체제 · 시스템 프로그래밍</p>
+            </div>
+            <div class="card">
+                <h3>C++</h3>
+                <p>알고리즘 · 객체지향 설계</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects">
+        <h2>프로젝트</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>택시 공유 앱</h3>
+                <p>Flutter + Firebase<br>로그인/탑승 그룹 기능 구현</p>
+            </div>
+            <div class="card">
+                <h3>웹 포트폴리오</h3>
+                <p>HTML/CSS/JS 기반 반응형 사이트 제작</p>
+            </div>
+            <div class="card">
+                <h3>알고리즘 라이브러리</h3>
+                <p>C++ 기반 그래프·DP 구현</p>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="navigation" style="text-align:center; padding:20px; background:#f0f0f0;">
+        <h2>과제 바로가기</h2>
+        <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:15px; margin-top:10px;">
+            <a href="nostyle.html">No Style</a>
+            <a href="style1.html">Style 1</a>
+            <a href="style2.html">Style 2</a>
+            <a href="example.html">Example</a>
+        </div>
+        <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:15px; margin-top:10px;">
+            <a href="form1.html">form1</a>
+            <a href="form1_css.html">form1_css</a>
+            <a href="form1_js.html">form1_js</a>
+            <a href="js_dynamic.html">js_dynamic</a>
+            <a href="form_practice.html">form_practice</a>
+        </div>
+    </section>
+
+    <section id="project3" style="text-align:center; padding:20px; background:#eef7ff;">
+        <h2>Project 3 과제 바로가기</h2>
+        <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:15px; margin-top:10px;">
+            <a href="lab1.html">Lab 1</a>
+            <a href="lab2.html">Lab 2</a>
+            <a href="lab3.html">Lab 3</a>
+            <a href="js_ajax.html">JS AJAX</a>
+        </div>
+    </section>
+
+
+
+    <section id="contact">
+        <h2>연락처</h2>
+        <p style="text-align:center;">
+            <a href="mailto:yejune0626@gmail.com">yejune0626@gmail.com</a><br>
+            <a href="https://github.com/sasayejune" target="_blank">github.com/sasayejune</a>
+        </p>
+    </section>
+
+    <footer>
+        <p>© 2025 김예준 · All rights reserved.</p>
+    </footer>
+</body>
+
+</html>
